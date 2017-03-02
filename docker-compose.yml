@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  db:
+    container_name: gwapit_test_db
+    image: postgres
+  core:
+    container_name: gwapit_test_core
+    build: ./core
+    command: bash -c "./manage.py migrate; while :; do ./manage.py runserver 0.0.0.0:9081; sleep 1; done"
+    volumes:
+      - ./core:/opt/gwapit
+    ports:
+      - "9081:9081"
+    depends_on:
+      - db
+  web:
+    container_name: gwapit_test_web
+    build: ./web
+    command: serve --host 0.0.0.0 --port 9080
+    volumes:
+      - ./web:/opt/gwapit
+    ports:
+      - "9080:9080"
